@@ -10,9 +10,59 @@
 
 // TODO Votre code ici.
 try {
-    ...
+    $bd = new PDO("mysql:host=localhost;dbname=table_test_php", "root", "");
+    $bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $dn = $bd->prepare("
+        INSERT INTO user (nom, prenom, rue, numero, code_postal, ville, pays, mail)
+        VALUES (?,?,?,?,?,?,?,?)
+    ");
+
+    $nom = "Jocaille";
+    $prenom = "Amaury";
+    $rue = "Rue blabla";
+    $numero = "54";
+    $codePostal = "6562";
+    $ville = "Chimay";
+    $pays = "France";
+    $mail = "ezoiahfih@hotmail.com";
+
+    $dn->bindParam(1, $nom);
+    $dn->bindParam(2, $prenom);
+    $dn->bindParam(3, $rue);
+    $dn->bindParam(4, $numero);
+    $dn->bindParam(5, $codePostal);
+    $dn->bindParam(6, $ville);
+    $dn->bindParam(7, $pays);
+    $dn->bindParam(8, $mail);
+
+    if($dn->execute()) {
+        echo "Ajout effectué";
+    }
+
+    $id = $bd->lastInsertId();
+
+    $rectif = $bd->prepare("
+        UPDATE user SET pays = :pays WHERE id= :id
+    ");
+
+    $pays = "Belgique";
+
+    $rectif->bindParam(':pays', $pays);
+    $rectif->bindParam(':id', $id);
+
+    $rectif->execute();
+
+    if($rectif->rowCount()) {
+        echo "La donnée a été modifié";
+    }
+    else {
+        echo "Echec de la modification";
+    }
 }
-catch...
+catch(PDOException $exception) {
+    echo "Erreur" . $exception->getMessage();
+}
 
 
 
